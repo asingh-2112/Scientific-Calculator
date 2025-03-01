@@ -1,5 +1,5 @@
 # Use OpenJDK 11 as base image
-FROM openjdk:11
+FROM openjdk:17
 
 # Copy the built JAR file into the container
 COPY target/scientific-calculator.jar /app.jar
