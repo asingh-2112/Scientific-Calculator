@@ -9,11 +9,14 @@
         state: present
       when: ansible_os_family == "Debian"
 
-    - name: Pull latest Docker image
+    - n- name: Pull latest Docker image
       community.docker.docker_image:
         name: asingh2112/calculator
         tag: latest
         source: pull
+        force_source: yes
+        force_tag: yes
+
 
     - name: Stop and remove existing container (if running)
       community.docker.docker_container:
