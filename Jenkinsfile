@@ -3,7 +3,7 @@ pipeline {
     stages {
         stage('Checkout Code') {
             steps {
-                git credentialsId: 'github-token', url: 'https://github.com/yourusername/Scientific_Calculator.git', branch: 'main'
+                git credentialsId: 'github-ssh-key', url: 'git@github.com:asingh-2112/Scientific_Calculator.git', branch: 'main'
             }
         }
     }
