@@ -1,9 +1,12 @@
 pipeline {
     agent any
     stages {
-        stage('Checkout Code') {
+        stage('Checkout') {
             steps {
-                git credentialsId: 'github-ssh-key', url: 'git@github.com:asingh-2112/Scientific-Calculator.git', branch: 'main'
+                script {
+                    // Checkout the code from the GitHub repository
+                    git branch: 'main', url: "${GITHUB_REPO_URL}"
+                }
             }
         }
     }
