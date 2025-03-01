@@ -13,7 +13,7 @@ pipeline {
             steps {
                 script {
                     // Build Docker image
-                    docker.build("${DOCKER_IMAGE_NAME}", '.')
+                    docker.build("calculator", '.')
                 }
             }
         }
