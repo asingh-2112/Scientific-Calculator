@@ -1,24 +1,33 @@
----
-- name: Pull Docker Image from Docker Hub
+- name: Deploy Docker Container on Localhost
   hosts: localhost
-  remote_user: raju
-  become: false
+  connection: local
+  become: yes
   tasks:
-    -
-    - name: Pull Docker Image
-      docker_image:
-        name: "asingh2112/calculator"
+    - name: Ensure Docker is Installed
+      apt:
+        name: docker.io
+        state: present
+      when: ansible_os_family == "Debian"
+
+    - name: Pull latest Docker image
+      community.docker.docker_image:
+        name: asingh2112/calculator
+        tag: latest
         source: pull
-      register: docker_pull_result
 
-    - name: Display Docker Pull Result
-      debug:
-        var: docker_pull_result
+    - name: Stop and remove existing container (if running)
+      community.docker.docker_container:
+        name: calculator
+        state: absent
+        force_kill: yes
 
-    - name: Start Docker service
-      service:
-        name: docker
+    - name: Run the new container
+      community.docker.docker_container:
+        name: calculator
+        image: asingh2112/calculator:latest
         state: started
-
-    - name: Running container
-      shell: docker run -it -d --name calculator asing2112/calculator /bin/bash
+        restart_policy: always
+        ports:
+          - "9090:8080"
+        interactive: yes
+        tty: yes
