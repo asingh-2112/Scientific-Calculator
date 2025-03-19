@@ -1,0 +1,28 @@
+---
+- name: Deploy Calculator Docker Image
+  hosts: localhost
+  become: false
+  tasks:
+    - name: Ensure Docker service is running
+      service:
+        name: docker
+        state: started
+
+    - name: Pull Docker Image
+      docker_image:
+        name: "asingh2112/calculator:latest"
+        source: pull
+      register: docker_pull_result
+
+    - name: Display Docker Pull Result
+      debug:
+        var: docker_pull_result
+
+    - name: Stop and Remove Existing Container (if it exists)
+      shell: |
+        docker stop calculator || true
+        docker rm calculator || true
+      ignore_errors: yes
+
+    - name: Run Docker container
+      shell: docker run -it -d --name calculator --restart unless-stopped asingh2112/calculator:latest

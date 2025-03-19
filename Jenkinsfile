@@ -1,33 +1,41 @@
 pipeline {
     agent any
-
     stages {
-        stage('Checkout Code') {
+        stage('Checkout') {
             steps {
                 script {
-                    git branch: 'main',
-                        credentialsId: 'github-token',  // Use the credentials ID
-                        url: 'https://github.com/yourusername/Scientific_Calculator.git'
+                    // Checkout the code from the GitHub repository
+                    git branch: 'main', url: "https://github.com/asingh-2112/Scientific-Calculator.git"
                 }
             }
         }
-
-        stage('Build') {
+            stage('Build Docker Image') {
             steps {
-                sh 'mvn clean install'
+                script {
+                    // Build Docker image
+                    docker.build("calculator", '.')
+                }
             }
         }
-
-        stage('Run Tests') {
+            stage('Push Docker Images') {
             steps {
-                sh 'mvn test'
+                script{
+                    docker.withRegistry('', 'dockerhub') {
+                    sh 'docker tag calculator asingh2112/calculator:latest'
+                    sh 'docker push asingh2112/calculator'
+                    }
+                 }
             }
         }
-
-        stage('Archive Artifacts') {
-            steps {
-                archiveArtifacts artifacts: 'target/*.jar', fingerprint: true
-            }
-        }
+        stage('Run Ansible Playbook') {
+                    steps {
+                        script {
+                            ansiblePlaybook(
+                                playbook: 'deploy.yml',
+                                inventory: 'ansible'
+                            )
+                        }
+                    }
+                }
     }
 }
